@@ -56,11 +56,12 @@ static const float afterInteractiveMaxProgressValue = 0.9;
 
 - (void)setProgress:(float)progress
 {
+    id<NJKWebViewProgressDelegate> progressDelegate = _progressDelegate;
     // progress should be incremental only
     if (progress > _progress || progress == 0) {
         _progress = progress;
-        if ([_progressDelegate respondsToSelector:@selector(webViewProgress:updateProgress:)]) {
-            [_progressDelegate webViewProgress:self updateProgress:progress];
+        if ([progressDelegate respondsToSelector:@selector(webViewProgress:updateProgress:)]) {
+            [progressDelegate webViewProgress:self updateProgress:progress];
         }
         if (_progressBlock) {
             _progressBlock(progress);
@@ -81,8 +82,9 @@ static const float afterInteractiveMaxProgressValue = 0.9;
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     BOOL ret = YES;
-    if ([_webViewProxyDelegate respondsToSelector:@selector(webView:shouldStartLoadWithRequest:navigationType:)]) {
-        ret = [_webViewProxyDelegate webView:webView shouldStartLoadWithRequest:request navigationType:navigationType];
+    id<UIWebViewDelegate> webViewProxyDelegate = _webViewProxyDelegate;
+    if ([webViewProxyDelegate respondsToSelector:@selector(webView:shouldStartLoadWithRequest:navigationType:)]) {
+        ret = [webViewProxyDelegate webView:webView shouldStartLoadWithRequest:request navigationType:navigationType];
     }
     
     if ([request.URL.absoluteString isEqualToString:completeRPCURL]) {
@@ -108,8 +110,9 @@ static const float afterInteractiveMaxProgressValue = 0.9;
 
 - (void)webViewDidStartLoad:(UIWebView *)webView
 {
-    if ([_webViewProxyDelegate respondsToSelector:@selector(webViewDidStartLoad:)]) {
-        [_webViewProxyDelegate webViewDidStartLoad:webView];
+    id<UIWebViewDelegate> webViewProxyDelegate = _webViewProxyDelegate;
+    if ([webViewProxyDelegate respondsToSelector:@selector(webViewDidStartLoad:)]) {
+        [webViewProxyDelegate webViewDidStartLoad:webView];
     }
 
     _loadingCount++;
@@ -120,8 +123,9 @@ static const float afterInteractiveMaxProgressValue = 0.9;
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
-    if ([_webViewProxyDelegate respondsToSelector:@selector(webViewDidFinishLoad:)]) {
-        [_webViewProxyDelegate webViewDidFinishLoad:webView];
+    id<UIWebViewDelegate> webViewProxyDelegate = _webViewProxyDelegate;
+    if ([webViewProxyDelegate respondsToSelector:@selector(webViewDidFinishLoad:)]) {
+        [webViewProxyDelegate webViewDidFinishLoad:webView];
     }
     
     _loadingCount--;
@@ -145,8 +149,9 @@ static const float afterInteractiveMaxProgressValue = 0.9;
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
 {
-    if ([_webViewProxyDelegate respondsToSelector:@selector(webView:didFailLoadWithError:)]) {
-        [_webViewProxyDelegate webView:webView didFailLoadWithError:error];
+    id<UIWebViewDelegate> webViewProxyDelegate = _webViewProxyDelegate;
+    if ([webViewProxyDelegate respondsToSelector:@selector(webView:didFailLoadWithError:)]) {
+        [webViewProxyDelegate webView:webView didFailLoadWithError:error];
     }
     
     _loadingCount--;
@@ -175,9 +180,10 @@ static const float afterInteractiveMaxProgressValue = 0.9;
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)selector
 {
     NSMethodSignature *signature = [super methodSignatureForSelector:selector];
+    id<UIWebViewDelegate> webViewProxyDelegate = _webViewProxyDelegate;
     if(!signature) {
-        if([_webViewProxyDelegate respondsToSelector:selector]) {
-            return [(NSObject *)_webViewProxyDelegate methodSignatureForSelector:selector];
+        if([webViewProxyDelegate respondsToSelector:selector]) {
+            return [(NSObject *)webViewProxyDelegate methodSignatureForSelector:selector];
         }
     }
     return signature;
@@ -185,8 +191,9 @@ static const float afterInteractiveMaxProgressValue = 0.9;
 
 - (void)forwardInvocation:(NSInvocation*)invocation
 {
-    if ([_webViewProxyDelegate respondsToSelector:[invocation selector]]) {
-        [invocation invokeWithTarget:_webViewProxyDelegate];
+    id<UIWebViewDelegate> webViewProxyDelegate = _webViewProxyDelegate;
+    if ([webViewProxyDelegate respondsToSelector:[invocation selector]]) {
+        [invocation invokeWithTarget:webViewProxyDelegate];
     }
 }
 
