@@ -8,6 +8,10 @@
 #import <Foundation/Foundation.h>
 
 
+extern const float NJKInitialProgressValue;
+extern const float NJKInteractiveProgressValue;
+extern const float NJKFinalProgressValue;
+
 typedef void (^NJKWebViewProgressBlock)(float progress);
 @protocol NJKWebViewProgressDelegate;
 @interface NJKWebViewProgress : NSObject<UIWebViewDelegate>
